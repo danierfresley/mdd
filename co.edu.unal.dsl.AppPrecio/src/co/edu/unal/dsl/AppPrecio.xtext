@@ -1,0 +1,155 @@
+grammar co.edu.unal.dsl.AppPrecio with org.eclipse.xtext.common.Terminals
+
+generate appPrecio "http://www.edu.co/unal/dsl/AppPrecio"
+	
+	AppPrecio:
+		 'appPrecio' '{' 
+			dominio=Dominio
+			arquitectura=Arquitectura
+			tecnologia=Tecnologia
+		'}'
+	;
+	
+	Dominio:
+		{Dominio} 'dominio' '{'
+			(servicios+=Servicio)*
+			(entidades+=Entidad)*
+		'}'
+	;
+	
+	Arquitectura:
+		{Arquitectura} 'arquitectura' '{'
+			(componentes+=Componente)*
+		'}'
+	;
+	
+	Tecnologia:
+		'tecnologia' name=ID '{'
+			'llave' ':' llave=LLave
+			(metodos+=MetodoTecnologia)*
+		'}'
+	;
+	
+	Servicio:
+		'servicio' name=ID '{'
+			(metodos+=MetodoServicio)*
+		'}'
+	;
+	
+	MetodoComponente:
+		'metodo' name=ID '{'
+			('MetodoServicio' ':' metodoServicio=[MetodoServicio])?
+			('mensaje' ':' mensaje=STRING)?
+		'}'
+	;
+	
+	MetodoServicio:
+		'metodo' name=ID '{'
+			('tipoParametro' ':' tipoParametro=Tipos)?
+			('tipoRetornoPromesa' ':' tipoRetorno=Tipos)
+		'}'
+	;
+	
+	MetodoTecnologia:
+		'metodo' name=ID '{'
+			('llave' ':' llave=[LLave])?
+			('valor' ':' valor=[TiposArregloListado])?
+		'}'
+	;
+	
+	Entidad:
+		Interfaz
+	;
+	
+	Interfaz:
+		'interfaz' name=ID '{'
+			(propiedades+=Propiedad)*
+		'}'
+	;
+	
+	Propiedad:
+		name=ID ':' tipoDato=TipoDato
+	;
+	
+	
+	Componente:
+		'componente' name=ID '{'
+			'interfaz'  ':' interfaz=[Interfaz]
+			'servicio'  ':' servicio=[Servicio]
+			'tecnologia'':' tecnologia=[Tecnologia]
+			'titulo' ':' titulo=STRING
+			(camposEntradas+=CampoEntrada)*
+			(botones+=Boton)*
+			(botonesOpcionItem+=BotonOpcionItem)*
+			(metodos+=MetodoComponente)*
+			(arreglos+=Arreglo)*
+			(listado+=Listado)*
+			lista=Lista? 
+		'}'
+	;
+	
+	CampoEntrada:
+		'campoEntrada' '{'
+			'contenido' ':' contenido=STRING
+			'modelo' ':' modelo=[Listado]
+			'campo' ':' campo=[Propiedad]
+		'}'
+		
+	;
+	
+	Boton:
+		'boton' '{'
+			'contenido' ':' contenido=STRING
+			'evento' ':' evento=Evento
+			('metodo' ':' metodo=[MetodoComponente])?
+		'}'
+	;
+	
+	BotonOpcionItem :
+		'botonBotonOpcionItem' '{'
+			'contenido' ':' contenido=STRING
+			'evento' ':' evento=Evento
+			('color' ':' color=Color)?
+			('metodo' ':' metodo=[MetodoComponente])?
+		'}'
+	;
+	
+	Lista:
+		'lista' name=ID '{'
+			'contenido' ':' contenido=STRING
+		'}'
+	;
+	
+	Tipos:
+		tipoPrimitivo=TipoDato | tipoEstructurado=[Entidad]
+	;
+	
+	LLave:
+		name=ID
+	;
+	
+	Arreglo:
+		'arreglo' name=ID ('tipo' tipo=[Entidad])?
+	;
+	
+	Listado:
+		'listado' name=ID 'tipo' tipo=[Entidad]
+	;
+	
+	TiposArregloListado:
+		Arreglo | Listado
+	;
+	
+	enum Evento:
+		clic='click'
+	;
+	
+	enum TipoDato:
+		numero='number' | cadena='string' | ninguna='any'
+	;
+	
+	enum Color:
+		color1='recondary' | color2='danger' | color3='primary'
+	;
+	
+	
